@@ -19,6 +19,21 @@ class Data{
     ArrayList<Integer> posSol= new ArrayList<Integer>();
 }
 
+class IndexData{
+    int x;
+    int y;
+    public IndexData(int x,int y){
+        this.x=x;
+        this.y=y;
+    }
+    public int getX(){
+        return this.x;
+    }
+    public int getY(){
+        return this.y;
+    }
+}
+
 public class Sudoku implements ActionListener{
     JFrame frame=new JFrame();
     JFrame comFrame=new JFrame();
@@ -29,6 +44,7 @@ public class Sudoku implements ActionListener{
     JButton submitButton=new JButton("Submit");
     JButton readButton=new JButton("Import File");
     Data[][] posSolution=new Data[9][9];
+    ArrayList<IndexData> emptySpaces= new ArrayList<IndexData>();
     public Sudoku(){
         frame.setLayout(new GridLayout(10,9));
         //sudokuPanel.setLayout(new GridLayout(9,9));
@@ -308,6 +324,8 @@ public class Sudoku implements ActionListener{
         for (int i = 0; i < 81; i++) {
             if(tf[i].getText().equals("0")){
                 //call next function
+                
+                System.out.println("");
                 System.out.println("Final state:");
                 for (int j = 0; j < 9; j++) {
             for (int k = 0; k < 9; k++) {
@@ -324,17 +342,138 @@ public class Sudoku implements ActionListener{
                 break;
             }
         }
+        if(f==1){
+            boolean bSolved=backtrack(sudoku);
+            if(bSolved){
+                System.out.println("");
+                System.out.println("Solved:");
+                for (int i = 0; i < 9; i++) {
+                    for (int j = 0; j < 9; j++) {
+                        System.out.print(sudoku[i][j]+" ");
+                    }
+                    System.out.println("");
+                }
+            }
+            else{
+                System.out.println("Not solved");
+            }
+        }
         if(f==0){
             comFrame.setVisible(true);
         }
     }
     
+//    public void backtrack(int[][] sudoku){
+//        System.out.println("Entered backtracking phase");
+//        for (int i = 0; i < 9; i++) {
+//            for (int j = 0; j < 9; j++) {
+//                if(sudoku[i][j]==0){
+//                    IndexData d=new IndexData(i,j);
+//                    emptySpaces.add(d);
+//                }
+//            }
+//        }
+//        int index=0;
+//        do{
+//            if(index<0||index>emptySpaces.size())
+//                break;
+//            int x=emptySpaces.get(index).getX();
+//            int y=emptySpaces.get(index).getY();
+//            
+//        }while(true);
+////        for (int i = 0; i < emptySpaces.size(); i++) {
+////            System.out.println(emptySpaces.get(i).x+" "+emptySpaces.get(i).y);
+////        }
+//    }
+    
+    public boolean backtrack(int[][] board)  
+    { 
+        int row = -1; 
+        int col = -1; 
+        boolean isEmpty = true; 
+        for (int i = 0; i < 9; i++) 
+        { 
+            for (int j = 0; j < 9; j++)  
+            { 
+                if (board[i][j] == 0)  
+                { 
+                    row = i; 
+                    col = j; 
+
+                    // we still have some remaining 
+                    // missing values in Sudoku 
+                    isEmpty = false;  
+                    break; 
+                } 
+            } 
+            if (!isEmpty) 
+            { 
+                break; 
+            } 
+        } 
+
+        // no empty space left 
+        if (isEmpty)  
+        { 
+            return true; 
+        } 
+
+        // else for each-row backtrack 
+        for (int num = 1; num <= 9; num++) 
+        { 
+            if (isSafe(board, num, row, col)) 
+            { 
+                board[row][col] = num; 
+                if (backtrack(board))  
+                { 
+                    // print(board, n); 
+                    return true; 
+                }  
+                else
+                { 
+                    board[row][col] = 0; // replace it 
+                } 
+            } 
+        } 
+        return false; 
+    } 
+
     public boolean checkValidity(int[][] sudoku, int x,int y,int num){
         for (int i = 0; i < 9; i++) {
             if(sudoku[x][i]==num)
                 return false;
             if(sudoku[i][y]==num)
                 return false;
+        }
+        return true;
+    }
+    
+    private static boolean isSafe(int[][] sudoku, int n, int r, int c)
+    {
+        //checking in row
+        for(int i=0;i<9;i++)
+        {
+            //there is a cell with same value
+            if(sudoku[r][i] == n)
+                return false;
+        }
+        //checking column
+        for(int i=0;i<9;i++)
+        {
+            //there is a cell with the value equal to i
+            if(sudoku[i][c] == n)
+                return false;
+        }
+        //checking sub matrix
+        int row_start = (r/3)*3;
+        int col_start = (c/3)*3;
+        for(int i=row_start;i<row_start+3;i++)
+        {
+            for(int j=col_start;j<col_start+3;j++)
+            {
+                if(sudoku[i][j]==n)
+                    return false;
+            }
         }
         return true;
     }
