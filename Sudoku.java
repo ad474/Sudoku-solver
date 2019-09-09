@@ -343,7 +343,16 @@ public class Sudoku implements ActionListener{
             }
         }
         if(f==1){
-            boolean bSolved=backtrack(sudoku);
+            backtrack(sudoku);
+        }
+        if(f==0){
+            comFrame.setVisible(true);
+        }
+    }
+    
+    public void backtrack(int[][] sudoku){
+        System.out.println("Entered backtracking phase");
+        boolean bSolved=recursiveCheck(sudoku);
             if(bSolved){
                 System.out.println("");
                 System.out.println("Solved:");
@@ -353,14 +362,17 @@ public class Sudoku implements ActionListener{
                     }
                     System.out.println("");
                 }
+                int u=0;
+                for (int k = 0; k < 9; k++) {
+                    for (int l = 0; l < 9; l++) {
+                        tf[u++].setText(""+sudoku[k][l]);
+                    }
+                }
+                comFrame.setVisible(true);
             }
             else{
                 System.out.println("Not solved");
             }
-        }
-        if(f==0){
-            comFrame.setVisible(true);
-        }
     }
     
 //    public void backtrack(int[][] sudoku){
@@ -386,7 +398,7 @@ public class Sudoku implements ActionListener{
 ////        }
 //    }
     
-    public boolean backtrack(int[][] board)  
+    public boolean recursiveCheck(int[][] board)  
     { 
         int row = -1; 
         int col = -1; 
@@ -419,12 +431,13 @@ public class Sudoku implements ActionListener{
         } 
 
         // else for each-row backtrack 
-        for (int num = 1; num <= 9; num++) 
+        //for (int num = posSolution[row][col].posSol.get(0); num < posSolution[row][col].posSol.size(); num++) 
+        for (int num = 1; num < 10; num++) 
         { 
             if (isSafe(board, num, row, col)) 
             { 
                 board[row][col] = num; 
-                if (backtrack(board))  
+                if (recursiveCheck(board))  
                 { 
                     // print(board, n); 
                     return true; 
